@@ -1,0 +1,34 @@
+<html>
+  <head>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <center>
+        <h2>User</h2>
+      </center>
+      <hr/>
+      <a href="/logout" class="btn btn-warning">Logout</a>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Active</th>
+          </tr>
+        </thead>
+        <tbody>
+          <%for(i=0;i<data.length;i++){%>
+            <tr>
+              <td><%=data[i]._id%></td>
+              <td><%=data[i].name%></td>
+              <td><%=data[i].email%></td>
+              <td><%=data[i].isActive%></td>
+            </tr>
+          <%}%>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

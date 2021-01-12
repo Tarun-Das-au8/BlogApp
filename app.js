@@ -16,9 +16,16 @@ app.use(bodyParser.json());
 app.use(session({
   secret:'mysessionid'
 }))
+//static path
+app.use(express.static(__dirname+'/public'));
+//html
+app.set('views','./src/views');
+//view engine
+app.set('view engine','ejs');
 
 app.get('/',(req,res)=>{
-  res.status(200).send('Program running successfully');
+  let message = req.query.message?req.query.message:'';
+  res.render('login',{message:message});
 })
 
 var mongoClient = new mongodb.MongoClient(url,{useNewUrlParser:true, useUnifiedTopology:true})
@@ -28,35 +35,47 @@ mongoClient.connect((err)=>{
 })
 
 //get all post
-app.get('/post',(req,res)=>{
+app.get('/posts',(req,res)=>{
   if(!req.session.user){
-    res.send('No session found')
+    res.redirect("/?message=No Session founds! Please Try Again")
   }
-  db.collection('posts').find().toArray((err,postdata)=>{
+  db.collection('posts').find({isActive:true}).toArray((err,postdata)=>{
     if(err) throw err;
-    res.send(postdata);
+    res.render('blog',{postdata:postdata});
   })
+})
+
+//for add post ui
+app.get('/addPost',(req,res)=>{
+  res.render('addPost');
 })
 
 app.post('/addpost',(req,res) => {
   if(!req.session.user) { 
-      res.send('No Session founds')
+    res.redirect("/?message=No Session founds! Please Try Again")
   }
 
   let data = {
       title: req.body.title,
       description:req.body.description, 
       createBy:req.session.user._id,
-      name:req.session.user.name
+      name:req.session.user.name,
+      isActive:true
   }
 
   //console.log(data)
   //res.send(data)
   db.collection('posts').insert(data,(err,result) => {
       if(err) throw err;
-      res.send("Post added")
+      //res.send("Post added")
+      res.redirect('/posts')
   })
 
+})
+
+//displaying UI
+app.get('/register',(req,res)=>{
+  res.render('register');
 })
 
 //Register User
@@ -64,32 +83,41 @@ app.post('/register',(req,res)=>{
   let user = {
     name:req.body.name,
     email:req.body.email,
-    password:req.body.password
+    password:req.body.password,
+    role:req.body.role?req.body.role:'user',
+    isActive:true
   }
   console.log(user);
   db.collection('users').insert(user, (err,data)=>{
-      res.send("Data added");
+      res.redirect('/');
   })
 })
 
 app.post('/login',(req,res) => {
   let user = {
       email:req.body.email,
-      password:req.body.password 
+      password:req.body.password
   }
   db.collection("users").findOne(user,(err,data) => {
       if(err || !data){
-          res.send("No User Found")
+          res.redirect('/?message=Invalid Login! Please try again.')
       }else{
          req.session.user=data;
-         res.send("login success")
+         res.redirect("/posts");
       }
   });
 });
 
 app.get('/logout',(req,res)=>{
     req.session.user = null;
-    res.send('Logout success');
+    res.redirect('/?message=Logout Success! Please login again.')
+})
+
+//all users
+app.get('/allusers',(req,res)=>{
+  db.collection('users').find().toArray((err,data)=>{
+    res.render('users',{data:data})
+  })
 })
 
 app.listen(port,(err)=>{

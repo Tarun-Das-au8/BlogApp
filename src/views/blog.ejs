@@ -1,0 +1,28 @@
+<html>
+  <head>
+    <title>Tech Blog</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <center>
+        <h2>Blog Posts</h2>
+      </center>
+      <hr/>
+      <a href="/logout" class="btn btn-warning">Logout</a>
+      <div class="row">
+        <div class="offset-md-3 col-md-5">
+          <a class="btn btn-info" href="/addPost">Add Post</a>
+          <% for(i=0;i<postdata.length;i++){%>
+          <div class="row">
+            <h3><%=postdata[i].title%></h3>
+            <p><%=postdata[i].description%></p>
+            <p>Created By : <%=postdata[i].name%></p>
+          </div>
+          <hr/>
+          <%}%>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

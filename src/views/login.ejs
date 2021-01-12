@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <title>Tech Blog</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <center>
+        <h2>Tech Blog</h2>
+      </center>
+      <hr/>
+      <div class="row">
+        <div class="offset-md-3 col-md-5">
+          <h2 style="color:red"><%=message%></h2>
+          <h2>Login</h2>
+          <hr/>
+          <form action="/login" method="POST">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input name="email" class="form-control" id="email"/>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input name="password" class="form-control" id="password"/>
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+            New User?<a href="/register">Signup</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

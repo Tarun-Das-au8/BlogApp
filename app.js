@@ -41,7 +41,7 @@ app.get('/posts',(req,res)=>{
   }
   db.collection('posts').find({isActive:true}).toArray((err,postdata)=>{
     if(err) throw err;
-    res.render('blog',{postdata:postdata});
+    res.render('blog',{postdata:postdata,username:req.session.user.name});
   })
 })
 
@@ -56,7 +56,7 @@ app.post('/addpost',(req,res) => {
   }
 
   let data = {
-      title: req.body.title,
+      name: req.body.title,
       description:req.body.description, 
       createBy:req.session.user._id,
       name:req.session.user.name,
@@ -91,6 +91,81 @@ app.post('/register',(req,res)=>{
   db.collection('users').insert(user, (err,data)=>{
       res.redirect('/');
   })
+})
+
+//edit post
+app.get('/edit/:id',(req,res)=>{
+  if(!req.session.user){
+    res.redirect("/?message=No Session founds! Please Try Again")
+  }
+  let Id = req.params.Id;
+  db.collection('post').findOne(
+    {_id:mongodb.ObjectID(Id)},
+    (err,data)=>{
+      if(err) throw err;
+      console.log(data);
+      res.render('edit',{data});
+    }
+  )
+})
+
+//update post
+app.post('/editPost/:id',(req,res)=>{
+  let Id = req.params.Id;
+  db.collection('posts').update(
+    {_id:mongodb.ObjectID(Id)},
+    {
+      $set:{
+        title:req.body.title,
+        description:req.body.description
+      }
+    },(err,result)=>{
+      if(err) throw err
+      res.redirect('/posts');
+    }
+  )
+})
+
+//hard delete post
+app.delete('deletePost/:id',(req,res)=>{
+  let Id = req.params.id;
+  db.collection('posts').remove({_id:mongodb.ObjectID(Id)},(err,result)=>{
+    if(err) throw err
+    res.send('Data deleted');
+  })
+})
+
+//edit user
+app.put('/editUser/:id',(req,res)=>{
+  let Id = req.params.Id;
+  db.collection('users').update(
+    {_id:mongodb.ObjectID(Id)},
+    {
+      $set:{
+        name:req.body.name,
+        email:req.body.email
+      }
+    },(err,result)=>{
+      if(err) throw err
+      res.send('Data updated');
+    }
+  )
+})
+
+//soft delete user
+app.put('/deactivateDelete/:id',(req,res)=>{
+  let Id = req.params.Id;
+  db.collection('users').update(
+    {_id:mongodb.ObjectID(Id)},
+    {
+      $set:{
+        isActive:false
+      }
+    },(err,result)=>{
+      if(err) throw err
+      res.send('Data updated');
+    }
+  )
 })
 
 app.post('/login',(req,res) => {

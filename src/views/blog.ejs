@@ -19,6 +19,9 @@
             <p><%=postdata[i].description%></p>
             <p>Created By : <%=postdata[i].name%></p>
           </div>
+          <%if(postdata[i].name==username){%>
+            <a href='/edit/<%=postdata[i]._id%>'>Edit</a>
+          <%}%>
           <hr/>
           <%}%>
         </div>
